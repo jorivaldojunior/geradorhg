@@ -1,0 +1,35 @@
+<div class="rounded-lg p-4 w-full max-w-2xl mx-auto">
+    <h2 class="text-white font-semibold mb-4 text-green-600 border-b pb-2">Passo 3: Status do Gerador</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-white font-medium mb-1">Corrente de Fase</label>
+        <input id="corrente_fase" type="text" class="w-full p-2 border rounded-lg" placeholder="389 A">
+      </div>
+      <div>
+        <label class="block text-white font-medium mb-1">Tensão Fase - Neutro</label>
+        <input id="tensao_fase_neutro" type="text" class="w-full p-2 border rounded-lg" placeholder="220 V">
+      </div>
+      <div>
+        <label class="block text-white font-medium mb-1">Tensão Fase - Fase</label>
+        <input id="tensao_fase_fase" type="text" class="w-full p-2 border rounded-lg" placeholder="380 V">
+      </div>
+      <div>
+        <label class="block text-white font-medium mb-1">Potência KW</label>
+        <input id="potencia_kw" type="text" class="w-full p-2 border rounded-lg" placeholder="220 KW">
+      </div>
+      <div>
+        <label class="block text-white font-medium mb-1">Disjuntor Geral Funcionando Corretamente?</label>
+        <select id="disjuntor_geral" class="w-full p-2 border rounded-lg">
+          <option value="sim">Sim</option>
+          <option value="não">Não</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-white font-medium mb-1">Algum Sinal de Alerta Sonoro ou visual?</label>
+        <select id="sinal_alerta" class="w-full p-2 border rounded-lg">
+          <option value="sim">Sim</option>
+          <option value="não">Não</option>
+        </select>
+      </div>
+    </div>
+  </div>

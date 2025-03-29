@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hospital Guararapes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body
+    class="bg-green-600 h-screen flex flex-col items-center justify-center text-white"
+  >
+    <!-- Logotipo -->
+    <div class="flex flex-col items-center space-y-6">
+      <img
+        src="./img/logo4.jpg"
+        alt="Logotipo"
+        class="w-32 h-32 rounded-full shadow-lg"
+      />
+      <h1 class="text-3xl font-bold">Checklist Gerador</h1>
+    </div>
+
+    <!-- Botão de Acesso no Rodapé -->
+    <div class="p-6 flex justify-center mb-16">
+      <button
+        id="openFingerprintScreen"
+        class="bg-blue-500 text-white px-12 py-4 rounded-full shadow-lg hover:bg-gray-200 transition hidden"
+      >
+        Agendamento online
+      </button>
+    </div>
+
+    <!-- Botão "Avançar" -->
+    <a
+      href="./index.html"
+      class="bg-blue-500 text-white py-3 px-8 rounded-lg hover:bg-custom-button-hover focus:outline-none focus:ring-2 focus:ring-custom-button focus:ring-opacity-50 transition duration-200"
+    >
+      Avançar
+    </a>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
+
