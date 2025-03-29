@@ -1,216 +1,352 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checklist HG</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    .progress-container {
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      margin: 10px 0;
-    }
-    .progress-bar {
-      height: 10px;
-      background-color: #ffffff;
-      border-radius: 10px;
-      width: 20%;
-      transition: width 0.4s ease;
-    }
-    .profile-icon {
-      background-color: rgba(255, 255, 255, 0.2);
-      transition: all 0.3s ease;
-    }
-    .profile-icon:hover {
-      background-color: rgba(255, 255, 255, 0.3);
-    }
-    .dark-modal {
-      background-color: rgba(30, 41, 59, 0.95);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .dark-modal input,
-    .dark-modal select,
-    .dark-modal textarea {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: white;
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-    .invalid-field {
-      border-color: #ef4444 !important;
-    }
-    .invalid-radio-group {
-      border: 1px solid #ef4444;
-      border-radius: 0.5rem;
-      padding: 0.5rem;
-    }
-    .profile-image {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-  </style>
-</head>
-<body class="bg-gradient-to-br from-green-600 to-green-800 min-h-screen">
-  <div class="min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="p-4 text-white">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center">
-          <img src="./img/logo4.jpg" alt="Logo" class="h-12 w-12 rounded-full" />
-          <h1 class="text-lg font-semibold ml-2">Check List Gerador HG</h1>
-        </div>
-        <div class="flex items-center space-x-3">
-          <button id="profileImageBtn" class="flex items-center">
-            <div id="profileImageContainer" class="profile-icon p-3 rounded-full flex items-center justify-center">
-              <svg id="defaultProfileIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <img id="userProfileImage" class="profile-image hidden" src="" alt="Foto de perfil">
-            </div>
-          </button>
-        </div>
-      </div>
-      
-      <div class="progress-container mt-2">
-        <div id="progressBar" class="progress-bar"></div>
-      </div>
-      <div class="text-center text-sm mt-1 text-white">
-        <span id="progressText">Passo 1 de 5</span>
-      </div>
-    </header>
-
-    <main id="mainContent" class="p-4 flex-grow">
-      <!-- Conteúdo será carregado dinamicamente -->
-    </main>
-
-    <footer class="p-4 bg-white bg-opacity-10 flex justify-center gap-8">
-      <button id="btnVoltar" class="flex flex-col items-center disabled:opacity-50" disabled>
-        <div class="bg-white p-3 rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-        </div>
-        <span class="mt-2 text-xs text-white">Voltar</span>
-      </button>
-      
-      <button id="btnAvancar" class="flex flex-col items-center">
-        <div class="bg-white p-3 rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </div>
-        <span class="mt-2 text-xs text-white">Avançar</span>
-      </button>
-
-      <button id="closeApp" class="flex flex-col items-center">
-        <div class="bg-white p-3 rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </div>
-        <span class="mt-2 text-xs text-white">Fechar</span>
-      </button>
-    </footer>
-  </div>
-
-  <!-- Modal para Cadastro de Usuário -->
-  <div id="userModal" class="fixed inset-0 bg-black bg-opacity-70 hidden justify-center items-center z-50">
-    <div class="dark-modal p-6 rounded-lg w-11/12 max-w-md shadow-xl">
-      <h2 class="text-lg font-semibold mb-4 text-white">Cadastrar Usuário</h2>
-      <form id="userForm">
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-1 text-white">Nome <span class="text-red-400">*</span></label>
-          <input type="text" id="userName" class="w-full p-2 rounded-lg" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-1 text-white">Email <span class="text-red-400">*</span></label>
-          <input type="email" id="userEmail" class="w-full p-2 rounded-lg" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-1 text-white">Endereço <span class="text-red-400">*</span></label>
-          <input type="text" id="userAddress" class="w-full p-2 rounded-lg" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-1 text-white">Telefone <span class="text-red-400">*</span></label>
-          <input type="tel" id="userPhone" class="w-full p-2 rounded-lg" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-1 text-white">Foto de Perfil</label>
-          <div class="flex items-center space-x-4">
-            <input type="file" id="userPhoto" class="hidden" accept="image/*">
-            <button type="button" id="btnSelectPhoto" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Selecionar Foto</button>
-            <button type="button" id="btnRemovePhoto" class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition hidden">Remover Foto</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checklist HG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      .progress-container {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        margin: 10px 0;
+      }
+      .progress-bar {
+        height: 10px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        width: 20%;
+        transition: width 0.4s ease;
+      }
+      .profile-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+      }
+      .profile-icon:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+      .dark-modal {
+        background-color: rgba(30, 41, 59, 0.95);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .dark-modal input,
+      .dark-modal select,
+      .dark-modal textarea {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .invalid-field {
+        border-color: #ef4444 !important;
+      }
+      .invalid-radio-group {
+        border: 1px solid #ef4444;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+      }
+      .profile-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-green-600 to-green-800 min-h-screen">
+    <div class="min-h-screen flex flex-col">
+      <!-- Header -->
+      <header class="p-4 text-white">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <img
+              src="./img/logo4.jpg"
+              alt="Logo"
+              class="h-12 w-12 rounded-full"
+            />
+            <h1 class="text-lg font-semibold ml-2">Check List Gerador HG</h1>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button id="profileImageBtn" class="flex items-center">
+              <div
+                id="profileImageContainer"
+                class="profile-icon p-3 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  id="defaultProfileIcon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                <img
+                  id="userProfileImage"
+                  class="profile-image hidden"
+                  src=""
+                  alt="Foto de perfil"
+                />
+              </div>
+            </button>
           </div>
         </div>
-        <div class="flex justify-end space-x-2">
-          <button type="button" id="closeModal" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">Cancelar</button>
-          <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Salvar</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
-  <script>
-    // Variáveis globais
-    let currentStep = 1;
-    const totalSteps = 5;
-    const formData = JSON.parse(localStorage.getItem('checklistFormData')) || {};
-    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
-    
-    // Função para formatar texto (capitalizar e substituir underscores)
-    function formatText(text) {
-      if (!text) return '';
-      
-      // Substituir underscores por espaços
-      let formatted = text.replace(/_/g, ' ');
-      
-      // Capitalizar primeira letra de cada palavra
-      formatted = formatted.toLowerCase()
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-      
-      return formatted;
-    }
-    
-    // Função para carregar o passo atual
-    function loadStep(step) {
-      const mainContent = document.getElementById('mainContent');
-      
-      document.getElementById('progressBar').style.width = `${(step / totalSteps) * 100}%`;
-      document.getElementById('progressText').textContent = `Passo ${step} de ${totalSteps}`;
-      document.getElementById('btnVoltar').disabled = step === 1;
-      
-      fetch(`step${step}.html`)
-        .then(response => response.text())
-        .then(html => {
-          mainContent.innerHTML = html;
-          
-          if (formData[`step${step}`]) {
-            const stepData = formData[`step${step}`];
-            for (const key in stepData) {
-              const element = document.getElementById(key);
-              if (element) {
-                if (element.type === 'radio' || element.type === 'checkbox') {
-                  const checkedElement = document.querySelector(`[name="${element.name}"][value="${stepData[key]}"]`);
-                  if (checkedElement) checkedElement.checked = true;
-                } else {
-                  element.value = stepData[key];
+        <div class="progress-container mt-2">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div class="text-center text-sm mt-1 text-white">
+          <span id="progressText">Passo 1 de 5</span>
+        </div>
+      </header>
+
+      <main id="mainContent" class="p-4 flex-grow">
+        <!-- Conteúdo será carregado dinamicamente -->
+      </main>
+
+      <footer class="p-4 bg-white bg-opacity-10 flex justify-center gap-8">
+        <button
+          id="btnVoltar"
+          class="flex flex-col items-center disabled:opacity-50"
+          disabled
+        >
+          <div
+            class="bg-white p-3 rounded-full flex items-center justify-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </div>
+          <span class="mt-2 text-xs text-white">Voltar</span>
+        </button>
+
+        <button id="btnAvancar" class="flex flex-col items-center">
+          <div
+            class="bg-white p-3 rounded-full flex items-center justify-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
+          </div>
+          <span class="mt-2 text-xs text-white">Avançar</span>
+        </button>
+
+        <button id="closeApp" class="flex flex-col items-center">
+          <div
+            class="bg-white p-3 rounded-full flex items-center justify-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+          <span class="mt-2 text-xs text-white">Fechar</span>
+        </button>
+      </footer>
+    </div>
+
+    <!-- Modal para Cadastro de Usuário -->
+    <div
+      id="userModal"
+      class="fixed inset-0 bg-black bg-opacity-70 hidden justify-center items-center z-50"
+    >
+      <div class="dark-modal p-6 rounded-lg w-11/12 max-w-md shadow-xl">
+        <h2 class="text-lg font-semibold mb-4 text-white">Cadastrar Usuário</h2>
+        <form id="userForm">
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1 text-white"
+              >Nome <span class="text-red-400">*</span></label
+            >
+            <input
+              type="text"
+              id="userName"
+              class="w-full p-2 rounded-lg"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1 text-white"
+              >Email <span class="text-red-400">*</span></label
+            >
+            <input
+              type="email"
+              id="userEmail"
+              class="w-full p-2 rounded-lg"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1 text-white"
+              >Endereço <span class="text-red-400">*</span></label
+            >
+            <input
+              type="text"
+              id="userAddress"
+              class="w-full p-2 rounded-lg"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1 text-white"
+              >Telefone <span class="text-red-400">*</span></label
+            >
+            <input
+              type="tel"
+              id="userPhone"
+              class="w-full p-2 rounded-lg"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1 text-white"
+              >Foto de Perfil</label
+            >
+            <div class="flex items-center space-x-4">
+              <input
+                type="file"
+                id="userPhoto"
+                class="hidden"
+                accept="image/*"
+              />
+              <button
+                type="button"
+                id="btnSelectPhoto"
+                class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                Selecionar Foto
+              </button>
+              <button
+                type="button"
+                id="btnRemovePhoto"
+                class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition hidden"
+              >
+                Remover Foto
+              </button>
+            </div>
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              id="closeModal"
+              class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            >
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Variáveis globais
+      let currentStep = 1;
+      const totalSteps = 5;
+      const formData =
+        JSON.parse(localStorage.getItem("checklistFormData")) || {};
+      const userProfile = JSON.parse(localStorage.getItem("userProfile")) || {};
+
+      // Função para formatar texto (capitalizar e substituir underscores)
+      function formatText(text) {
+        if (!text) return "";
+
+        // Substituir underscores por espaços
+        let formatted = text.replace(/_/g, " ");
+
+        // Capitalizar primeira letra de cada palavra
+        formatted = formatted
+          .toLowerCase()
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+
+        return formatted;
+      }
+
+      // Função para carregar o passo atual
+      function loadStep(step) {
+        const mainContent = document.getElementById("mainContent");
+
+        document.getElementById("progressBar").style.width = `${
+          (step / totalSteps) * 100
+        }%`;
+        document.getElementById(
+          "progressText"
+        ).textContent = `Passo ${step} de ${totalSteps}`;
+        document.getElementById("btnVoltar").disabled = step === 1;
+
+        fetch(`step${step}.html`)
+          .then((response) => response.text())
+          .then((html) => {
+            mainContent.innerHTML = html;
+
+            if (formData[`step${step}`]) {
+              const stepData = formData[`step${step}`];
+              for (const key in stepData) {
+                const element = document.getElementById(key);
+                if (element) {
+                  if (element.type === "radio" || element.type === "checkbox") {
+                    const checkedElement = document.querySelector(
+                      `[name="${element.name}"][value="${stepData[key]}"]`
+                    );
+                    if (checkedElement) checkedElement.checked = true;
+                  } else {
+                    element.value = stepData[key];
+                  }
                 }
               }
             }
-          }
-        })
-        .catch(error => {
-          console.error('Erro ao carregar o passo:', error);
-          mainContent.innerHTML = `
+          })
+          .catch((error) => {
+            console.error("Erro ao carregar o passo:", error);
+            mainContent.innerHTML = `
             <div class="bg-white bg-opacity-10 text-white p-6 rounded-lg text-center max-w-2xl mx-auto">
               <h3 class="text-lg font-semibold mb-2">Erro ao carregar o conteúdo</h3>
               <p class="mb-4">Por favor, tente novamente mais tarde.</p>
@@ -219,304 +355,366 @@
               </button>
             </div>
           `;
-        });
-    }
-    
-    // Função para validar TODOS os campos obrigatórios
-    function validateCurrentStep() {
-      const requiredFields = document.querySelectorAll('#mainContent [required]');
-      let isValid = true;
-      let firstInvalidField = null;
-      
-      requiredFields.forEach(field => {
-        field.classList.remove('invalid-field');
-        if (field.type === 'radio') {
-          const radioContainer = field.closest('div');
-          if (radioContainer) radioContainer.classList.remove('invalid-radio-group');
-        }
-        
-        let fieldValid = true;
-        
-        if (field.type === 'radio') {
-          const radioGroup = document.querySelectorAll(`[name="${field.name}"]`);
-          fieldValid = Array.from(radioGroup).some(radio => radio.checked);
-          
-          if (!fieldValid) {
-            const radioContainer = field.closest('div');
-            if (radioContainer) radioContainer.classList.add('invalid-radio-group');
+          });
+      }
+
+      // Função para validar TODOS os campos obrigatórios
+      function validateCurrentStep() {
+        const requiredFields = document.querySelectorAll(
+          "#mainContent [required]"
+        );
+        let isValid = true;
+        let firstInvalidField = null;
+
+        requiredFields.forEach((field) => {
+          field.classList.remove("invalid-field");
+          if (field.type === "radio") {
+            const radioContainer = field.closest("div");
+            if (radioContainer)
+              radioContainer.classList.remove("invalid-radio-group");
           }
-        } else if (field.type === 'select-one' && field.value === "") {
-          fieldValid = false;
-          field.classList.add('invalid-field');
-        } else if (!field.value.trim()) {
-          fieldValid = false;
-          field.classList.add('invalid-field');
+
+          let fieldValid = true;
+
+          if (field.type === "radio") {
+            const radioGroup = document.querySelectorAll(
+              `[name="${field.name}"]`
+            );
+            fieldValid = Array.from(radioGroup).some((radio) => radio.checked);
+
+            if (!fieldValid) {
+              const radioContainer = field.closest("div");
+              if (radioContainer)
+                radioContainer.classList.add("invalid-radio-group");
+            }
+          } else if (field.type === "select-one" && field.value === "") {
+            fieldValid = false;
+            field.classList.add("invalid-field");
+          } else if (!field.value.trim()) {
+            fieldValid = false;
+            field.classList.add("invalid-field");
+          }
+
+          if (!fieldValid && !firstInvalidField) {
+            firstInvalidField = field;
+          }
+
+          isValid = isValid && fieldValid;
+        });
+
+        if (!isValid) {
+          Swal.fire({
+            icon: "error",
+            title: "Campos obrigatórios",
+            html: "Por favor, preencha <b>TODOS</b> os campos marcados como obrigatórios",
+            background: "#1f2937",
+            color: "white",
+            confirmButtonColor: "#3b82f6",
+          });
+
+          if (firstInvalidField) {
+            firstInvalidField.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            if (firstInvalidField.type === "radio") {
+              document
+                .querySelector(`[name="${firstInvalidField.name}"]`)
+                .closest("div")
+                .scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }
         }
-        
-        if (!fieldValid && !firstInvalidField) {
-          firstInvalidField = field;
+
+        return isValid;
+      }
+
+      // Função para salvar os dados do passo atual
+      function saveCurrentStep() {
+        if (!validateCurrentStep()) {
+          return false;
         }
-        
-        isValid = isValid && fieldValid;
-      });
-      
-      if (!isValid) {
+
+        const stepData = {};
+        const inputs = document.querySelectorAll(
+          "#mainContent input, #mainContent select, #mainContent textarea"
+        );
+
+        inputs.forEach((input) => {
+          if (input.type === "radio" && input.checked) {
+            stepData[input.name] = input.value;
+          } else if (input.type !== "radio" && input.type !== "checkbox") {
+            stepData[input.id] = input.value;
+          } else if (input.type === "checkbox") {
+            stepData[input.id] = input.checked;
+          }
+        });
+
+        formData[`step${currentStep}`] = stepData;
+        localStorage.setItem("checklistFormData", JSON.stringify(formData));
+
         Swal.fire({
-          icon: 'error',
-          title: 'Campos obrigatórios',
-          html: 'Por favor, preencha <b>TODOS</b> os campos marcados como obrigatórios',
-          background: '#1f2937',
-          color: 'white',
-          confirmButtonColor: '#3b82f6'
+          position: "top-end",
+          icon: "success",
+          title: "Dados salvos com sucesso!",
+          showConfirmButton: false,
+          timer: 1500,
+          background: "#1f2937",
+          color: "white",
         });
-        
-        if (firstInvalidField) {
-          firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          if (firstInvalidField.type === 'radio') {
-            document.querySelector(`[name="${firstInvalidField.name}"]`).closest('div').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }
-      }
-      
-      return isValid;
-    }
-    
-    // Função para salvar os dados do passo atual
-    function saveCurrentStep() {
-      if (!validateCurrentStep()) {
-        return false;
-      }
-      
-      const stepData = {};
-      const inputs = document.querySelectorAll('#mainContent input, #mainContent select, #mainContent textarea');
-      
-      inputs.forEach(input => {
-        if (input.type === 'radio' && input.checked) {
-          stepData[input.name] = input.value;
-        } else if (input.type !== 'radio' && input.type !== 'checkbox') {
-          stepData[input.id] = input.value;
-        } else if (input.type === 'checkbox') {
-          stepData[input.id] = input.checked;
-        }
-      });
-      
-      formData[`step${currentStep}`] = stepData;
-      localStorage.setItem('checklistFormData', JSON.stringify(formData));
-      
-      Swal.fire({
-        position: 'top-end',
-        icon: 'success',
-        title: 'Dados salvos com sucesso!',
-        showConfirmButton: false,
-        timer: 1500,
-        background: '#1f2937',
-        color: 'white'
-      });
-      
-      return true;
-    }
-    
-    // Função para avançar para o próximo passo
-    function goToNextStep() {
-      if (!saveCurrentStep()) {
-        return;
-      }
-      
-      if (currentStep < totalSteps) {
-        currentStep++;
-        loadStep(currentStep);
-      } else {
-        generatePDF();
-      }
-    }
-    
-    // Função para atualizar a imagem de perfil
-    function updateProfileImage(imageSrc) {
-      const defaultIcon = document.getElementById('defaultProfileIcon');
-      const profileImage = document.getElementById('userProfileImage');
-      const removePhotoBtn = document.getElementById('btnRemovePhoto');
-      
-      if (imageSrc) {
-        profileImage.src = imageSrc;
-        profileImage.classList.remove('hidden');
-        defaultIcon.classList.add('hidden');
-        removePhotoBtn.classList.remove('hidden');
-        userProfile.photo = imageSrc;
-      } else {
-        profileImage.src = '';
-        profileImage.classList.add('hidden');
-        defaultIcon.classList.remove('hidden');
-        removePhotoBtn.classList.add('hidden');
-        delete userProfile.photo;
-      }
-      localStorage.setItem('userProfile', JSON.stringify(userProfile));
-    }
-    
-    // Função para salvar dados do perfil
-    function saveProfile() {
-      userProfile.name = document.getElementById('userName').value;
-      userProfile.email = document.getElementById('userEmail').value;
-      userProfile.address = document.getElementById('userAddress').value;
-      userProfile.phone = document.getElementById('userPhone').value;
-      
-      localStorage.setItem('userProfile', JSON.stringify(userProfile));
-      
-      Swal.fire({
-        position: 'top-end',
-        icon: 'success',
-        title: 'Perfil atualizado!',
-        showConfirmButton: false,
-        timer: 1500,
-        background: '#1f2937',
-        color: 'white'
-      });
-      
-      document.getElementById('userModal').classList.add('hidden');
-    }
-    
-    // Função para carregar perfil
-    function loadProfile() {
-      if (userProfile.name) document.getElementById('userName').value = userProfile.name;
-      if (userProfile.email) document.getElementById('userEmail').value = userProfile.email;
-      if (userProfile.address) document.getElementById('userAddress').value = userProfile.address;
-      if (userProfile.phone) document.getElementById('userPhone').value = userProfile.phone;
-      if (userProfile.photo) updateProfileImage(userProfile.photo);
-    }
-    
-    // Função para gerar PDF simplificado
-    function generatePDF() {
-      if (!saveCurrentStep()) {
-        return;
+
+        return true;
       }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      
-      // Configurações
-      const margin = 15;
-      let yPosition = 20;
-      
-      // Título principal
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.text('CHECKLIST HG', 105, yPosition, { align: 'center' });
-      yPosition += 10;
-      
-      // Data
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      const today = new Date();
-      doc.text(`Data: ${today.toLocaleDateString('pt-BR')}`, 105, yPosition, { align: 'center' });
-      yPosition += 15;
-      
-      // Adicionar seções
-      for (let step = 1; step <= totalSteps; step++) {
-        const stepData = formData[`step${step}`];
-        if (!stepData) continue;
-        
-        // Verificar espaço na página
-        if (yPosition > 250) {
-          doc.addPage();
-          yPosition = 20;
+      // Função para avançar para o próximo passo
+      function goToNextStep() {
+        if (!saveCurrentStep()) {
+          return;
         }
-        
-        // Título da seção
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`SEÇÃO ${step}`, margin, yPosition);
-        yPosition += 10;
-        
-        // Linha divisória
-        doc.setDrawColor(200, 200, 200);
-        doc.line(margin, yPosition, 195, yPosition);
-        yPosition += 10;
-        
-        // Conteúdo
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
-        
-        for (const [key, value] of Object.entries(stepData)) {
-          // Verificar espaço
-          if (yPosition > 270) {
-            doc.addPage();
-            yPosition = 20;
-          }
-          
-          const formattedKey = formatText(key);
-          const displayValue = typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : value;
-          
-          doc.text(`• ${formattedKey}: ${displayValue}`, margin, yPosition);
-          yPosition += 7;
-        }
-        
-        yPosition += 10; // Espaço entre seções
-      }
 
-      doc.save('checklist-hg.pdf');
-
-      Swal.fire({
-        title: 'Relatório Gerado',
-        text: 'Checklist HG salvo como PDF!',
-        icon: 'success',
-        background: '#1f2937',
-        color: 'white',
-        confirmButtonColor: '#3b82f6'
-      });
-    }
-
-    // Inicialização
-    document.addEventListener('DOMContentLoaded', () => {
-      loadStep(currentStep);
-      loadProfile();
-      
-      document.getElementById('btnVoltar').addEventListener('click', () => {
-        if (currentStep > 1) {
-          currentStep--;
+        if (currentStep < totalSteps) {
+          currentStep++;
           loadStep(currentStep);
+        } else {
+          generatePDF();
         }
-      });
-      
-      document.getElementById('btnAvancar').addEventListener('click', goToNextStep);
-      
-      document.getElementById('closeApp').addEventListener('click', () => {
-        window.location.href = 'index1.html';
-      });
-      
-      const userModal = document.getElementById('userModal');
-      document.getElementById('profileImageBtn').addEventListener('click', () => {
-        userModal.classList.remove('hidden');
-      });
-      
-      document.getElementById('closeModal').addEventListener('click', () => {
-        userModal.classList.add('hidden');
-      });
-      
-      document.getElementById('userForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        saveProfile();
-      });
-      
-      const fileInput = document.getElementById('userPhoto');
-      document.getElementById('btnSelectPhoto').addEventListener('click', () => {
-        fileInput.click();
-      });
-      
-      fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            updateProfileImage(event.target.result);
+      }
+
+      // Função para atualizar a imagem de perfil
+      function updateProfileImage(imageSrc) {
+        const defaultIcon = document.getElementById("defaultProfileIcon");
+        const profileImage = document.getElementById("userProfileImage");
+        const removePhotoBtn = document.getElementById("btnRemovePhoto");
+
+        if (imageSrc) {
+          profileImage.src = imageSrc;
+          profileImage.classList.remove("hidden");
+          defaultIcon.classList.add("hidden");
+          removePhotoBtn.classList.remove("hidden");
+          userProfile.photo = imageSrc;
+        } else {
+          profileImage.src = "";
+          profileImage.classList.add("hidden");
+          defaultIcon.classList.remove("hidden");
+          removePhotoBtn.classList.add("hidden");
+          delete userProfile.photo;
+        }
+        localStorage.setItem("userProfile", JSON.stringify(userProfile));
+      }
+
+      // Função para salvar dados do perfil
+      function saveProfile() {
+        userProfile.name = document.getElementById("userName").value;
+        userProfile.email = document.getElementById("userEmail").value;
+        userProfile.address = document.getElementById("userAddress").value;
+        userProfile.phone = document.getElementById("userPhone").value;
+
+        localStorage.setItem("userProfile", JSON.stringify(userProfile));
+
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Perfil atualizado!",
+          showConfirmButton: false,
+          timer: 1500,
+          background: "#1f2937",
+          color: "white",
+        });
+
+        document.getElementById("userModal").classList.add("hidden");
+      }
+
+      // Função para carregar perfil
+      function loadProfile() {
+        if (userProfile.name)
+          document.getElementById("userName").value = userProfile.name;
+        if (userProfile.email)
+          document.getElementById("userEmail").value = userProfile.email;
+        if (userProfile.address)
+          document.getElementById("userAddress").value = userProfile.address;
+        if (userProfile.phone)
+          document.getElementById("userPhone").value = userProfile.phone;
+        if (userProfile.photo) updateProfileImage(userProfile.photo);
+      }
+
+      // Função auxiliar para converter imagem em Base64
+      function getBase64Image(url) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = "Anonymous";
+          img.onload = () => {
+            try {
+              const canvas = document.createElement("canvas");
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0);
+              resolve(canvas.toDataURL("image/jpeg"));
+            } catch (error) {
+              reject(error);
+            }
           };
-          reader.readAsDataURL(file);
+          img.onerror = () => reject(new Error("Erro ao carregar imagem"));
+          img.src = url;
+        });
+      }
+
+      async function generatePDF() {
+        if (!saveCurrentStep()) {
+          return;
         }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Configurações
+        const margin = 15;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const columnWidth = (pageWidth - margin * 3) / 2;
+        let leftY = 50;
+        let rightY = 50;
+        const lineHeight = 6;
+
+        // Adicionar logo
+        try {
+          const logoData = await getBase64Image("./img/logo4.jpg");
+          doc.addImage(logoData, "JPEG", margin, 20, 20, 20);
+        } catch (error) {
+          console.error("Erro ao carregar a logo:", error);
+        }
+
+        // Título centralizado
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        const title = "CHECK LIST DO GERADOR";
+        const titleWidth =
+          (doc.getStringUnitWidth(title) * doc.internal.getFontSize()) /
+          doc.internal.scaleFactor;
+        const titleX = (pageWidth - titleWidth) / 2;
+        doc.text(title, titleX, 30);
+
+        // Função auxiliar para adicionar seções
+        function addSection(step, x, y) {
+          const stepData = formData[`step${step}`];
+          if (!stepData) return y;
+
+          // Título da seção
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "bold");
+          doc.text(`SEÇÃO ${step}`, x, y);
+          y += 7;
+
+          // Linha divisória entre título da seção e conteúdo
+          doc.setDrawColor(200, 200, 200);
+          doc.line(x, y, x + columnWidth, y);
+          y += 10;
+
+          // Conteúdo
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "normal");
+
+          for (const [key, value] of Object.entries(stepData)) {
+            const formattedKey = formatText(key);
+            const displayValue =
+              typeof value === "boolean" ? (value ? "✔" : "✖") : value;
+
+            doc.text(`• ${formattedKey}: ${displayValue}`, x, y);
+            y += lineHeight;
+
+            if (y > 270) break;
+          }
+
+          return y + 5;
+        }
+
+        // Organização das seções
+        leftY = addSection(1, margin, leftY);
+        rightY = addSection(4, margin * 2 + columnWidth, rightY);
+
+        leftY = addSection(2, margin, leftY);
+        rightY = addSection(5, margin * 2 + columnWidth, rightY);
+
+        const section3Y = Math.max(leftY, rightY);
+        if (section3Y < 270) {
+          addSection(3, margin, section3Y);
+        } else {
+          doc.addPage();
+          addSection(3, margin, 20);
+        }
+
+        doc.save("checklist-hg.pdf");
+
+        Swal.fire({
+          title: "Relatório Gerado",
+          text: "Checklist salvo como PDF em uma página!",
+          icon: "success",
+          background: "#1f2937",
+          color: "white",
+          confirmButtonColor: "#3b82f6",
+        });
+      }
+
+      // Inicialização
+      document.addEventListener("DOMContentLoaded", () => {
+        loadStep(currentStep);
+        loadProfile();
+
+        document.getElementById("btnVoltar").addEventListener("click", () => {
+          if (currentStep > 1) {
+            currentStep--;
+            loadStep(currentStep);
+          }
+        });
+
+        document
+          .getElementById("btnAvancar")
+          .addEventListener("click", goToNextStep);
+
+        document.getElementById("closeApp").addEventListener("click", () => {
+          window.location.href = "index1.html";
+        });
+
+        const userModal = document.getElementById("userModal");
+        document
+          .getElementById("profileImageBtn")
+          .addEventListener("click", () => {
+            userModal.classList.remove("hidden");
+          });
+
+        document.getElementById("closeModal").addEventListener("click", () => {
+          userModal.classList.add("hidden");
+        });
+
+        document.getElementById("userForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          saveProfile();
+        });
+
+        const fileInput = document.getElementById("userPhoto");
+        document
+          .getElementById("btnSelectPhoto")
+          .addEventListener("click", () => {
+            fileInput.click();
+          });
+
+        fileInput.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              updateProfileImage(event.target.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        document
+          .getElementById("btnRemovePhoto")
+          .addEventListener("click", () => {
+            fileInput.value = "";
+            updateProfileImage(null);
+          });
       });
-      
-      document.getElementById('btnRemovePhoto').addEventListener('click', () => {
-        fileInput.value = '';
-        updateProfileImage(null);
-      });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
