@@ -26,10 +26,17 @@
       .arrow-btn:hover {
         transform: scale(1.1);
       }
-      /* Removendo estilos de círculo da logo */
       .logo-img {
         border-radius: 0;
         box-shadow: none;
+      }
+
+      /* === Efeito 3D para o H1 === */
+      .h1-3d {
+        color: #15803d; /* verde tailwind (green-700) */
+        font-weight: 900;
+        text-shadow: 2px 2px 0 #00000030, 4px 4px 0 #00000020;
+        transform: perspective(500px) rotateX(5deg) rotateY(-3deg);
       }
     </style>
   </head>
@@ -44,7 +51,7 @@
           alt="Logotipo"
           class="w-48 h-48 logo-img"
         />
-        <h1 class="text-green-700 font-bold text-3xl md:text-4xl">Check List Gerador</h1>
+        <h1 class="text-3xl md:text-4xl h1-3d">App check list HG</h1>
       </div>
 
       <!-- Botão de seta animada -->
@@ -82,5 +89,3 @@
     <script src="script.js"></script>
   </body>
 </html>
-
-
