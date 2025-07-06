@@ -313,7 +313,7 @@
           <div class="sector-icon surgery">
             <i class="fas fa-scalpel"></i>
           </div>
-          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Bloco</span>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Cirúrgico</span>
         </a>
         
         <!-- Farmácia -->
@@ -575,7 +575,7 @@
       
       // Lista de todos os setores disponíveis
       const allSectors = [
-        'gerador', 'limpeza', 'esterilizacao', 
+        'gerador', 'higienizacao', 'cme', 
         'enfermaria', 'cirurgico', 'farmacia', 
         'laboratorio', 'radiologia', 'emergencia', 'nutricao'
       ];
@@ -628,7 +628,7 @@
       // Alerta urgente (exemplo para gerador)
       const generatorData = localStorage.getItem('checklist_gerador');
       if (!generatorData) {
-        document.getElementById('alertMessage').textContent = 'Checklist do Gerador ainda não realizado hoje!';
+        document.getElementById('alertMessage').textContent = 'Todos os checklist devem ser realizado antes do inicio das atividades!';
         document.getElementById('urgentAlert').classList.remove('bg-yellow-50', 'border-yellow-400');
         document.getElementById('urgentAlert').classList.add('bg-red-50', 'border-red-400');
         document.querySelector('#urgentAlert .text-yellow-600').classList.replace('text-yellow-600', 'text-red-600');
