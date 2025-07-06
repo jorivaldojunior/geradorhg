@@ -34,6 +34,29 @@
       display: none;
     }
     
+    /* Carrossel de dicas */
+    .tips-carousel {
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .tips-carousel::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .tip-card {
+      scroll-snap-align: start;
+      flex: 0 0 85%;
+    }
+    
+    @media (min-width: 768px) {
+      .tip-card {
+        flex: 0 0 32%;
+      }
+    }
+    
     /* Ícones com tema verde */
     .sector-icon {
       width: 60px;
@@ -390,14 +413,88 @@
         </div>
       </div>
 
-      <!-- Dica do Dia -->
-      <div class="bg-white rounded-lg p-3 flex items-start">
-        <div class="bg-green-100 p-2 rounded-full mr-3 text-green-600 flex-shrink-0">
-          <i class="fas fa-lightbulb"></i>
-        </div>
-        <div>
-          <p class="font-medium text-gray-800 text-sm">Dica de Segurança</p>
-          <p class="text-xs text-gray-600" id="safetyTip">Verifique sempre os prazos de esterilização dos materiais no CME antes do uso.</p>
+      <!-- Carrossel de Dicas -->
+      <div class="mb-4">
+        <h3 class="text-sm font-medium text-gray-800 mb-2 flex items-center">
+          <i class="fas fa-lightbulb text-green-600 mr-2"></i> Dicas de Segurança
+        </h3>
+        
+        <div class="relative">
+          <div class="flex overflow-x-auto gap-3 pb-4 tips-carousel" id="tipsCarousel">
+            <!-- Dica 1 -->
+            <div class="tip-card bg-white rounded-lg p-4 flex-shrink-0 green-shadow">
+              <div class="flex items-start">
+                <div class="bg-green-100 p-2 rounded-full mr-3 text-green-600 flex-shrink-0">
+                  <i class="fas fa-hand-sparkles"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-800 text-sm">Esterilização</p>
+                  <p class="text-xs text-gray-600 mt-1">Verifique sempre os prazos de esterilização dos materiais no CME antes do uso.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Dica 2 -->
+            <div class="tip-card bg-white rounded-lg p-4 flex-shrink-0 green-shadow">
+              <div class="flex items-start">
+                <div class="bg-green-100 p-2 rounded-full mr-3 text-green-600 flex-shrink-0">
+                  <i class="fas fa-hands-wash"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-800 text-sm">Higienização</p>
+                  <p class="text-xs text-gray-600 mt-1">Lembre-se dos 5 momentos para higienização das mãos no ambiente hospitalar.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Dica 3 -->
+            <div class="tip-card bg-white rounded-lg p-4 flex-shrink-0 green-shadow">
+              <div class="flex items-start">
+                <div class="bg-green-100 p-2 rounded-full mr-3 text-green-600 flex-shrink-0">
+                  <i class="fas fa-user-check"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-800 text-sm">Identificação</p>
+                  <p class="text-xs text-gray-600 mt-1">Antes de qualquer procedimento, confirme a identificação do paciente.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Dica 4 -->
+            <div class="tip-card bg-white rounded-lg p-4 flex-shrink-0 green-shadow">
+              <div class="flex items-start">
+                <div class="bg-green-100 p-2 rounded-full mr-3 text-green-600 flex-shrink-0">
+                  <i class="fas fa-fire-extinguisher"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-800 text-sm">Segurança</p>
+                  <p class="text-xs text-gray-600 mt-1">Mantenha os extintores de incêndio desobstruídos e com selo de garantia válido.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Dica 5 -->
+            <div class="tip-card bg-white rounded-lg p-4 flex-shrink-0 green-shadow">
+              <div class="flex items-start">
+                <div class="bg-green-100 p-2 rounded-full mr-3 text-green-600 flex-shrink-0">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-800 text-sm">EPIs</p>
+                  <p class="text-xs text-gray-600 mt-1">Realize a checagem de equipamentos de proteção individual antes de cada uso.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Indicadores do carrossel (opcional) -->
+          <div class="flex justify-center gap-1 mt-2">
+            <button class="tip-indicator w-2 h-2 rounded-full bg-green-200 transition" data-index="0"></button>
+            <button class="tip-indicator w-2 h-2 rounded-full bg-green-200 transition" data-index="1"></button>
+            <button class="tip-indicator w-2 h-2 rounded-full bg-green-200 transition" data-index="2"></button>
+            <button class="tip-indicator w-2 h-2 rounded-full bg-green-200 transition" data-index="3"></button>
+            <button class="tip-indicator w-2 h-2 rounded-full bg-green-200 transition" data-index="4"></button>
+          </div>
         </div>
       </div>
     </section>
@@ -467,9 +564,6 @@
         showBanner(parseInt(indicator.dataset.index));
       });
     });
-    
-    // Inicia com o primeiro banner visível
-    showBanner(0);
     
     // Lógica para status do hospital
     document.addEventListener('DOMContentLoaded', function() {
@@ -541,17 +635,50 @@
         document.querySelector('#urgentAlert h3').classList.replace('text-yellow-800', 'text-red-800');
         document.querySelector('#urgentAlert div.text-yellow-700').classList.replace('text-yellow-700', 'text-red-700');
       }
+    });
+    
+    // Lógica para o carrossel de dicas
+    document.addEventListener('DOMContentLoaded', function() {
+      const carousel = document.getElementById('tipsCarousel');
+      const tipIndicators = document.querySelectorAll('.tip-indicator');
+      let currentTip = 0;
       
-      // Dicas de segurança rotativas
-      const safetyTips = [
-        "Verifique sempre os prazos de esterilização dos materiais no CME antes do uso.",
-        "Lembre-se dos 5 momentos para higienização das mãos no ambiente hospitalar.",
-        "Antes de qualquer procedimento, confirme a identificação do paciente.",
-        "Mantenha os extintores de incêndio desobstruídos e com selo de garantia válido.",
-        "Realize a checagem de equipamentos de proteção individual antes de cada uso."
-      ];
+      // Atualiza indicadores
+      function updateTipIndicators(index) {
+        tipIndicators.forEach((indicator, i) => {
+          if (i === index) {
+            indicator.classList.remove('bg-green-200');
+            indicator.classList.add('bg-green-600');
+          } else {
+            indicator.classList.remove('bg-green-600');
+            indicator.classList.add('bg-green-200');
+          }
+        });
+      }
       
-      document.getElementById('safetyTip').textContent = safetyTips[Math.floor(Math.random() * safetyTips.length)];
+      // Event listeners para os indicadores
+      tipIndicators.forEach(indicator => {
+        indicator.addEventListener('click', () => {
+          const index = parseInt(indicator.dataset.index);
+          currentTip = index;
+          carousel.scrollTo({
+            left: index * carousel.offsetWidth * 0.85,
+            behavior: 'smooth'
+          });
+          updateTipIndicators(index);
+        });
+      });
+      
+      // Atualiza indicador quando o usuário desliza
+      carousel.addEventListener('scroll', () => {
+        const scrollPosition = carousel.scrollLeft;
+        const cardWidth = carousel.offsetWidth * 0.85;
+        currentTip = Math.round(scrollPosition / cardWidth);
+        updateTipIndicators(currentTip);
+      });
+      
+      // Inicia com o primeiro indicador ativo
+      updateTipIndicators(0);
     });
     
     // Adiciona classe active ao item do footer clicado
