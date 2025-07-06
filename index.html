@@ -3,60 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checklist-HG</title>
+  <title>Checklist HG - Hospital Guararapes</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
-      background: white;
-      overflow-x: hidden;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      overflow: hidden;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
-
-    .logo-animada {
-      animation: bounceHorizontal 3s infinite ease-in-out;
-      transform-origin: center bottom;
-      width: 300px;
-      cursor: pointer;
+    
+    .logo-container {
+      animation: float 6s ease-in-out infinite;
+      transition: all 0.3s ease;
     }
-
-    @media (min-width: 768px) {
-      .logo-animada {
-        width: 400px;
-      }
+    
+    .logo-container:hover {
+      transform: scale(1.05);
     }
-
-    @keyframes bounceHorizontal {
+    
+    @keyframes float {
       0%, 100% {
-        transform: translateX(0) scale(1);
-      }
-      25% {
-        transform: translateX(-30px) scale(1.05, 0.95);
+        transform: translateY(0);
       }
       50% {
-        transform: translateX(0) scale(1);
+        transform: translateY(-20px);
       }
-      75% {
-        transform: translateX(30px) scale(1.05, 0.95);
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        opacity: 1;
       }
+      50% {
+        opacity: 0.6;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    
+    .loading-bar {
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #059669, #10b981);
+      transition: width 0.5s ease;
+      border-radius: 2px;
     }
   </style>
 </head>
 <body class="flex flex-col items-center justify-center h-screen text-center px-4">
+  <!-- Container principal com animação -->
+  <div class="logo-container flex flex-col items-center">
+    <!-- Logo HG com tamanho responsivo -->
+    <img 
+      src="./img/logohg.png" 
+      alt="Hospital Guararapes" 
+      class="w-64 md:w-80 lg:w-96 cursor-pointer mb-6"
+      onclick="avancarPagina()"
+    />
+    
+    <!-- Barra de carregamento animada -->
+    <div class="w-64 md:w-80 lg:w-96 h-1 bg-gray-200 rounded-full mb-4 overflow-hidden">
+      <div id="loadingBar" class="loading-bar"></div>
+    </div>
+    
+    <!-- Mensagem interativa -->
+    <div class="text-gray-600 mb-8">
+      <p class="text-lg font-medium">Sistema de Checklist Hospitalar</p>
+      <p class="text-sm mt-2 pulse">Clique na logo ou aguarde o carregamento...</p>
+    </div>
+    
+    <!-- Rodapé institucional -->
+    <div class="text-xs text-gray-400 mt-8">
+      <p>Hospital Guararapes - Excelência em cuidados de saúde</p>
+      <p class="mt-1">© 2023 Todos os direitos reservados</p>
+    </div>
+  </div>
 
-  <!-- LOGO COM ANIMAÇÃO E EVENTO DE CLIQUE -->
-  <img 
-    src="./img/logohg.png" 
-    alt="Logo Hospital Guararapes" 
-    class="logo-animada" 
-    onclick="avancarPagina()" 
-  />
-  <p class="text-sm text-green-500 mt-4">App CheckList - Clique na logo...</p>
-  <!-- JS -->
   <script>
+    // Função para avançar para a próxima página
     function avancarPagina() {
-      window.location.href = "index1.html";
+      // Mostra efeito visual de clique
+      document.querySelector('.logo-container').classList.add('animate-pulse');
+      
+      // Redireciona após breve delay
+      setTimeout(() => {
+        window.location.href = "index1.html";
+      }, 300);
     }
+    
+    // Carregamento automático progressivo
+    let progress = 0;
+    const loadingInterval = setInterval(() => {
+      progress += Math.random() * 10;
+      document.getElementById('loadingBar').style.width = `${Math.min(progress, 100)}%`;
+      
+      if (progress >= 100) {
+        clearInterval(loadingInterval);
+        setTimeout(() => {
+          avancarPagina();
+        }, 500);
+      }
+    }, 300);
+    
+    // Permite clique/touch na logo
+    document.querySelector('img').addEventListener('click', avancarPagina);
   </script>
-
 </body>
 </html>

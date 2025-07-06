@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checklist Hospitalar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Tema verde hospitalar */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.2);
+    }
+    
+    /* Carrossel */
+    .carousel-container {
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .carousel-container::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .carousel-item {
+      scroll-snap-align: start;
+      flex: 0 0 100%;
+    }
+    
+    /* Ícones com tema verde */
+    .sector-icon {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 18px;
+      margin-bottom: 10px;
+      font-size: 28px;
+      color: white;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
+    }
+    
+    /* Tons de verde para cada setor */
+    .generator { background: linear-gradient(135deg, #059669, #047857); }
+    .cleaning { background: linear-gradient(135deg, #10b981, #059669); }
+    .sterilization { background: linear-gradient(135deg, #34d399, #10b981); }
+    .ward { background: linear-gradient(135deg, #6ee7b7, #34d399); }
+    .surgery { background: linear-gradient(135deg, #a7f3d0, #6ee7b7); }
+    .pharmacy { background: linear-gradient(135deg, #047857, #059669); }
+    .laboratory { background: linear-gradient(135deg, #064e3b, #047857); }
+    .radiology { background: linear-gradient(135deg, #065f46, #047857); }
+    
+    /* Efeitos hover */
+    .sector-card:hover .sector-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    /* Footer verde */
+    .footer-item {
+      transition: all 0.2s ease;
+    }
+    
+    .footer-item:hover {
+      transform: translateY(-3px);
+      color: #047857;
+    }
+    
+    .footer-item.active {
+      color: #047857;
+    }
+    
+    /* Animação do banner */
+    @keyframes fadeIn {
+      from { opacity: 0.8; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .banner-animation {
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    
+    /* Sombra verde suave */
+    .green-shadow {
+      box-shadow: 0 4px 20px rgba(5, 150, 105, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-white font-sans pb-20">
+
+  <!-- Header Verde -->
+  <header class="bg-gradient-to-r from-green-600 to-green-700 text-white p-5 text-center shadow-lg green-shadow">
+    <h1 class="text-2xl font-bold"><i class="fas fa-hospital-alt mr-2"></i>Checklist Hospitalar</h1>
+    <p class="text-sm opacity-90 mt-1">Selecione o setor para iniciar</p>
+  </header>
+
+  <!-- Banner Rotativo com Tema Verde -->
+  <div class="relative w-full h-48 overflow-hidden mt-4 mx-4 rounded-xl green-shadow">
+    <div class="absolute inset-0 flex transition-transform duration-1000 ease-in-out" id="bannerSlider">
+      <!-- Banner 1 -->
+      <div class="w-full flex-shrink-0 relative banner-animation">
+        <div class="absolute inset-0 bg-gradient-to-r from-green-800/80 to-green-600/80"></div>
+        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+             class="w-full h-full object-cover" alt="Hospital">
+        <div class="absolute bottom-0 left-0 p-5 text-white">
+          <h3 class="text-xl font-bold">Protocolos Hospitalares</h3>
+          <p class="text-sm">Padronização de processos e segurança</p>
+        </div>
+      </div>
+      
+      <!-- Banner 2 -->
+      <div class="w-full flex-shrink-0 relative banner-animation">
+        <div class="absolute inset-0 bg-gradient-to-r from-green-700/80 to-green-500/80"></div>
+        <img src="https://images.unsplash.com/photo-1581595219315-a187dd40c322?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+             class="w-full h-full object-cover" alt="Gerador">
+        <div class="absolute bottom-0 left-0 p-5 text-white">
+          <h3 class="text-xl font-bold">Checklist Gerador</h3>
+          <p class="text-sm">Manutenção preventiva de equipamentos</p>
+        </div>
+      </div>
+      
+      <!-- Banner 3 -->
+      <div class="w-full flex-shrink-0 relative banner-animation">
+        <div class="absolute inset-0 bg-gradient-to-r from-green-900/80 to-green-700/80"></div>
+        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+             class="w-full h-full object-cover" alt="UTI">
+        <div class="absolute bottom-0 left-0 p-5 text-white">
+          <h3 class="text-xl font-bold">Checklist Enfermaria</h3>
+          <p class="text-sm">Procedimentos e cuidados diários</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Indicadores do banner -->
+    <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+      <button class="banner-indicator w-2 h-2 rounded-full bg-white/50 hover:bg-white transition" data-index="0"></button>
+      <button class="banner-indicator w-2 h-2 rounded-full bg-white/50 hover:bg-white transition" data-index="1"></button>
+      <button class="banner-indicator w-2 h-2 rounded-full bg-white/50 hover:bg-white transition" data-index="2"></button>
+    </div>
+  </div>
+
+  <!-- Setores do Hospital - Carrossel Horizontal -->
+  <section class="mt-8 px-5">
+    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+      <i class="fas fa-procedures mr-2 text-green-600"></i> Setores do Hospital
+    </h2>
+    
+    <div class="flex overflow-x-auto gap-5 pb-5 carousel-container">
+      <!-- Gerador -->
+      <a href="checklist-gerador.html" class="sector-card flex flex-col items-center glass-card p-5 rounded-2xl shadow-md flex-shrink-0 w-32">
+        <div class="sector-icon generator">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <span class="font-medium text-gray-800 text-center">Gerador</span>
+      </a>
+      
+      <!-- Limpeza -->
+      <a href="checklist-limpeza.html" class="sector-card flex flex-col items-center glass-card p-5 rounded-2xl shadow-md flex-shrink-0 w-32">
+        <div class="sector-icon cleaning">
+          <i class="fas fa-broom"></i>
+        </div>
+        <span class="font-medium text-gray-800 text-center">Limpeza</span>
+      </a>
+      
+      <!-- Esterilização -->
+      <a href="checklist-esterilizacao.html" class="sector-card flex flex-col items-center glass-card p-5 rounded-2xl shadow-md flex-shrink-0 w-32">
+        <div class="sector-icon sterilization">
+          <i class="fas fa-hand-sparkles"></i>
+        </div>
+        <span class="font-medium text-gray-800 text-center">Esterilização</span>
+      </a>
+      
+      <!-- Enfermaria -->
+      <a href="checklist-enfermaria.html" class="sector-card flex flex-col items-center glass-card p-5 rounded-2xl shadow-md flex-shrink-0 w-32">
+        <div class="sector-icon ward">
+          <i class="fas fa-procedures"></i>
+        </div>
+        <span class="font-medium text-gray-800 text-center">Enfermaria</span>
+      </a>
+      
+      <!-- Centro Cirúrgico -->
+      <a href="checklist-cirurgico.html" class="sector-card flex flex-col items-center glass-card p-5 rounded-2xl shadow-md flex-shrink-0 w-32">
+        <div class="sector-icon surgery">
+          <i class="fas fa-scalpel"></i>
+        </div>
+        <span class="font-medium text-gray-800 text-center">Cirúrgico</span>
+      </a>
+      
+      <!-- Farmácia -->
+      <a href="checklist-farmacia.html" class="sector-card flex flex-col items-center glass-card p-5 rounded-2xl shadow-md flex-shrink-0 w-32">
+        <div class="sector-icon pharmacy">
+          <i class="fas fa-pills"></i>
+        </div>
+        <span class="font-medium text-gray-800 text-center">Farmácia</span>
+      </a>
+      
+      <!-- Laboratório -->
+      <a href="checklist-laboratorio.html" class="sector-card flex flex-col items-center glass-card p-5 rounded-2xl shadow-md flex-shrink-0 w-32">
+        <div class="sector-icon laboratory">
+          <i class="fas fa-flask"></i>
+        </div>
+        <span class="font-medium text-gray-800 text-center">Laboratório</span>
+      </a>
+      
+      <!-- Radiologia -->
+      <a href="checklist-radiologia.html" class="sector-card flex flex-col items-center glass-card p-5 rounded-2xl shadow-md flex-shrink-0 w-32">
+        <div class="sector-icon radiology">
+          <i class="fas fa-x-ray"></i>
+        </div>
+        <span class="font-medium text-gray-800 text-center">Radiologia</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Rodapé Fixo Verde -->
+  <footer class="fixed bottom-0 left-0 w-full bg-white border-t border-green-100 shadow-lg flex justify-around items-center py-3 z-50 green-shadow">
+    <a href="#" class="footer-item active flex flex-col items-center text-green-600">
+      <i class="fas fa-home text-lg"></i>
+      <span class="text-xs mt-1">Início</span>
+    </a>
+    
+    <a href="#" class="footer-item flex flex-col items-center text-gray-600 hover:text-green-600">
+      <i class="fas fa-list-alt text-lg"></i>
+      <span class="text-xs mt-1">Checklists</span>
+    </a>
+    
+    <a href="#" class="footer-item flex flex-col items-center text-gray-600 hover:text-green-600">
+      <i class="fas fa-history text-lg"></i>
+      <span class="text-xs mt-1">Histórico</span>
+    </a>
+    
+    <a href="#" class="footer-item flex flex-col items-center text-gray-600 hover:text-green-600">
+      <i class="fas fa-user-circle text-lg"></i>
+      <span class="text-xs mt-1">Perfil</span>
+    </a>
+  </footer>
+
+  <!-- JavaScript para o Banner Rotativo -->
+  <script>
+    // Banner automático
+    let currentBanner = 0;
+    const banners = document.getElementById('bannerSlider').children;
+    const indicators = document.querySelectorAll('.banner-indicator');
+    const totalBanners = banners.length;
+    
+    function showBanner(index) {
+      currentBanner = index;
+      document.getElementById('bannerSlider').style.transform = `translateX(-${currentBanner * 100}%)`;
+      
+      // Atualiza indicadores
+      indicators.forEach((indicator, i) => {
+        if (i === currentBanner) {
+          indicator.classList.add('bg-white');
+          indicator.classList.remove('bg-white/50');
+        } else {
+          indicator.classList.remove('bg-white');
+          indicator.classList.add('bg-white/50');
+        }
+      });
+      
+      // Reinicia animação
+      banners[currentBanner].classList.remove('banner-animation');
+      void banners[currentBanner].offsetWidth; // Trigger reflow
+      banners[currentBanner].classList.add('banner-animation');
+    }
+    
+    // Rotação automática a cada 5 segundos
+    setInterval(() => {
+      currentBanner = (currentBanner + 1) % totalBanners;
+      showBanner(currentBanner);
+    }, 5000);
+    
+    // Clique nos indicadores
+    indicators.forEach(indicator => {
+      indicator.addEventListener('click', () => {
+        showBanner(parseInt(indicator.dataset.index));
+      });
+    });
+    
+    // Inicia com o primeiro banner visível
+    showBanner(0);
+    
+    // Adiciona classe active ao item do footer clicado
+    document.querySelectorAll('.footer-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector('.footer-item.active').classList.remove('active', 'text-green-600');
+        this.classList.add('active', 'text-green-600');
+      });
+    });
+  </script>
+</body>
+</html>
