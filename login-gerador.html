@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso ao Checklist Gerador</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .hospital-bg {
+      background-color: #f8fafc;
+    }
+    .login-card {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+    }
+    .input-field {
+      transition: all 0.2s ease;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .input-field:focus {
+      border-bottom-color: #059669;
+    }
+  </style>
+</head>
+<body class="hospital-bg min-h-screen flex items-center justify-center p-4">
+  <div class="login-card bg-white rounded-lg overflow-hidden w-full max-w-sm">
+    <div class="p-8">
+      <div class="text-center mb-8">
+        <div class="mx-auto mb-4 flex justify-center">
+          <i class="fas fa-shield-alt text-4xl text-green-600"></i>
+        </div>
+        <h1 class="text-xl font-medium text-gray-800">Acesso Autorizado</h1>
+        <p class="text-gray-500 text-sm mt-1">Área restrita à equipe de manutenção</p>
+      </div>
+      
+      <form id="loginForm" class="space-y-6">
+        <div>
+          <label for="username" class="block text-xs font-medium text-gray-500 mb-1">LOGIN</label>
+          <input type="text" id="username" required
+                 class="input-field w-full px-0 py-2 bg-transparent focus:outline-none focus:ring-0">
+        </div>
+        
+        <div>
+          <label for="password" class="block text-xs font-medium text-gray-500 mb-1">SENHA</label>
+          <input type="password" id="password" required
+                 class="input-field w-full px-0 py-2 bg-transparent focus:outline-none focus:ring-0">
+        </div>
+        
+        <button type="submit" 
+                class="w-full bg-green-600 text-white py-2.5 rounded font-medium hover:bg-green-700 transition duration-200">
+          Acessar
+        </button>
+
+        <!-- Link Voltar discreto -->
+        <div class="text-center pt-2">
+          <a href="index.html" class="text-gray-400 hover:text-gray-600 text-xs inline-flex items-center">
+            <i class="fas fa-chevron-left mr-1 text-xs"></i> Retornar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      // Credenciais válidas
+      const validUsername = 'manutencao';
+      const validPassword = 'aldo';
+      
+      if(username === validUsername && password === validPassword) {
+        window.location.href = 'gerador.html';
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Credenciais inválidas',
+          text: 'Por favor, verifique seu login e senha',
+          confirmButtonColor: '#059669',
+          customClass: {
+            popup: 'text-sm'
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,764 +1,394 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checklist HG</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-      /* Estilos mantidos do original */
-      .progress-container {
-        width: 100%;
-        background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        margin: 10px 0;
-      }
-      .progress-bar {
-        height: 10px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        width: 20%;
-        transition: width 0.4s ease;
-      }
-      .profile-icon {
-        background-color: rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-      }
-      .profile-icon:hover {
-        background-color: rgba(255, 255, 255, 0.3);
-      }
-      .dark-modal {
-        background-color: rgba(30, 41, 59, 0.95);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .dark-modal input,
-      .dark-modal select,
-      .dark-modal textarea {
-        background-color: rgba(255, 255, 255, 0.1);
-        color: white;
-        border-color: rgba(255, 255, 255, 0.3);
-      }
-      .invalid-field {
-        border-color: #ef4444 !important;
-      }
-      .invalid-radio-group {
-        border: 1px solid #ef4444;
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-      }
-      .profile-image {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checklist Hospital Guararapes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Tema verde hospitalar */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.2);
+    }
+    
+    /* Carrossel */
+    .carousel-container {
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .carousel-container::-webkit-scrollbar {
+      display: none;
+    }
+    
+    /* Ícones com tema verde */
+    .sector-icon {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 18px;
+      margin-bottom: 10px;
+      font-size: 28px;
+      color: white;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
+    }
+    
+    /* Tons de verde para cada setor */
+    .generator { background: linear-gradient(135deg, #059669, #047857); }
+    .cleaning { background: linear-gradient(135deg, #10b981, #059669); }
+    .sterilization { background: linear-gradient(135deg, #34d399, #10b981); }
+    .ward { background: linear-gradient(135deg, #6ee7b7, #34d399); }
+    .surgery { background: linear-gradient(135deg, #a7f3d0, #6ee7b7); }
+    .pharmacy { background: linear-gradient(135deg, #047857, #059669); }
+    .laboratory { background: linear-gradient(135deg, #064e3b, #047857); }
+    .radiology { background: linear-gradient(135deg, #065f46, #047857); }
+    .emergency { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .nutrition { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    
+    /* Efeitos hover */
+    .sector-card:hover .sector-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    /* Footer verde */
+    .footer-item {
+      transition: all 0.2s ease;
+    }
+    
+    .footer-item:hover {
+      transform: translateY(-3px);
+      color: #047857;
+    }
+    
+    .footer-item.active {
+      color: #047857;
+    }
+    
+    /* Animação do banner */
+    @keyframes fadeIn {
+      from { opacity: 0.8; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .banner-animation {
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    
+    /* Sombra verde suave */
+    .green-shadow {
+      box-shadow: 0 4px 20px rgba(5, 150, 105, 0.15);
+    }
+    
+    /* Logo header */
+    .hospital-logo {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    /* Ajustes responsivos */
+    @media (max-width: 640px) {
+      .hospital-logo {
+        height: 32px;
       }
       
-      /* Novos estilos para layout fixo */
-      body {
-        overflow: hidden;
-      }
-      .app-container {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-      }
-      .fixed-header {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: linear-gradient(to bottom, #059669, #047857);
-      }
-     .fixed-footer {
-        position: sticky;
-        bottom: 0;
-        z-index: 10;
-        background: linear-gradient(to top, #059669, #047857);
-      }
-      .scrollable-content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 16px;
-        /* Espaço extra para o footer não cobrir conteúdo */
-        padding-bottom: 80px;
+      .banner-height {
+        height: 160px;
       }
       
-      /* Ajustes específicos para mobile */
-      @media (max-width: 640px) {
-        .scrollable-content {
-          padding-bottom: 100px; /* Mais espaço para o footer em telas pequenas */
-        }
-        .fixed-footer {
-          padding: 12px 4px; /* Reduz padding horizontal em mobile */
-        }
+      .sector-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
       }
       
-    </style>
-  </head>
-  <body class="bg-gradient-to-br from-green-600 to-green-800">
-    <div class="app-container">
-      <!-- Header Fixo -->
-      <header class="fixed-header p-4 text-white">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center">
-            <img
-              src="./img/logohg.png"
-              alt="Logo"
-              class="h-12 w-12 rounded-full"
-            />
-            <h1 class="text-lg font-semibold ml-2">Check List Gerador</h1>
-          </div>
-          <div class="flex items-center space-x-3">
-            <button id="profileImageBtn" class="flex items-center">
-              <div
-                id="profileImageContainer"
-                class="profile-icon p-3 rounded-full flex items-center justify-center"
-              >
-                <svg
-                  id="defaultProfileIcon"
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-                <img
-                  id="userProfileImage"
-                  class="profile-image hidden"
-                  src=""
-                  alt="Foto de perfil"
-                />
-              </div>
-            </button>
-          </div>
-        </div>
+      .sector-card {
+        width: 28vw;
+        min-width: 28vw;
+        padding: 12px;
+      }
+      
+      .footer-item {
+        font-size: 0.8rem;
+      }
+    }
 
-        <div class="progress-container mt-2">
-          <div id="progressBar" class="progress-bar"></div>
-        </div>
-        <div class="text-center text-sm mt-1 text-white">
-          <span id="progressText">Passo 1 de 5</span>
-        </div>
-      </header>
+    @media (min-width: 768px) {
+      .banner-height {
+        height: 280px;
+      }
+      
+      .carousel-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        overflow-x: visible;
+      }
+      
+      .sector-card {
+        width: auto;
+        min-width: auto;
+      }
+    }
 
-      <!-- Conteúdo Rolável -->
-      <main id="mainContent" class="scrollable-content">
-        <!-- Conteúdo será carregado dinamicamente -->
-      </main>
+    /* Ajuste para telas muito pequenas */
+    @media (max-width: 360px) {
+      .sector-card {
+        width: 26vw;
+        min-width: 26vw;
+      }
+      
+      .footer-item i {
+        font-size: 1rem;
+      }
+      
+      .footer-item span {
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body class="bg-white font-sans pb-20">
 
-      <!-- Footer Fixo -->
-      <footer class="fixed-footer p-4 bg-white bg-opacity-10 flex justify-center gap-8">
-        <button
-          id="btnVoltar"
-          class="flex flex-col items-center disabled:opacity-50"
-          disabled
-        >
-          <div
-            class="bg-white p-3 rounded-full flex items-center justify-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-green-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-          </div>
-          <span class="mt-2 text-xs text-white">Voltar</span>
-        </button>
-
-        <button id="btnAvancar" class="flex flex-col items-center">
-          <div
-            class="bg-white p-3 rounded-full flex items-center justify-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-green-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-              />
-            </svg>
-          </div>
-          <span class="mt-2 text-xs text-white">Avançar</span>
-        </button>
-
-        <button id="closeApp" class="flex flex-col items-center">
-          <div
-            class="bg-white p-3 rounded-full flex items-center justify-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-green-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </div>
-          <span class="mt-2 text-xs text-white">Fechar</span>
-        </button>
-      </footer>
+  <!-- Header com Logo HG -->
+  <header class="bg-gradient-to-r from-green-600 to-green-700 text-white p-3 shadow-lg green-shadow">
+    <div class="container mx-auto flex items-center justify-center space-x-3">
+      <img src="./img/logohg.png" alt="Hospital Guararapes" class="hospital-logo">
+      <div class="text-center">
+        <h1 class="text-lg md:text-xl font-bold">Hospital Guararapes</h1>
+        <p class="text-xs opacity-90">Sistema de Checklist Hospitalar</p>
+      </div>
     </div>
+  </header>
 
-    <!-- Modal para Cadastro de Usuário (mantido igual) -->
-    <div
-      id="userModal"
-      class="fixed inset-0 bg-black bg-opacity-70 hidden justify-center items-center z-50"
-    >
-      <div class="dark-modal p-6 rounded-lg w-11/12 max-w-md shadow-xl">
-        <h2 class="text-lg font-semibold mb-4 text-white">Cadastrar Usuário</h2>
-        <form id="userForm">
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-1 text-white"
-              >Nome <span class="text-red-400">*</span></label
-            >
-            <input
-              type="text"
-              id="userName"
-              class="w-full p-2 rounded-lg"
-              required
-            />
+  <main class="container mx-auto px-4">
+    <!-- Banner Rotativo -->
+    <div class="relative w-full banner-height overflow-hidden mt-4 rounded-xl green-shadow">
+      <div class="absolute inset-0 flex transition-transform duration-1000 ease-in-out" id="bannerSlider">
+        <!-- Banner 1 -->
+        <div class="w-full flex-shrink-0 relative banner-animation">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-800/80 to-green-600/80"></div>
+          <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+               class="w-full h-full object-cover" alt="Hospital">
+          <div class="absolute bottom-0 left-0 p-4 md:p-5 text-white">
+            <h3 class="text-lg md:text-xl font-bold">Protocolos Hospitalares</h3>
+            <p class="text-xs md:text-sm">Padronização de processos e segurança</p>
           </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-1 text-white"
-              >Email <span class="text-red-400">*</span></label
-            >
-            <input
-              type="email"
-              id="userEmail"
-              class="w-full p-2 rounded-lg"
-              required
-            />
+        </div>
+        
+        <!-- Banner 2 -->
+        <div class="w-full flex-shrink-0 relative banner-animation">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-700/80 to-green-500/80"></div>
+          <img src="https://images.unsplash.com/photo-1581595219315-a187dd40c322?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+               class="w-full h-full object-cover" alt="Gerador">
+          <div class="absolute bottom-0 left-0 p-4 md:p-5 text-white">
+            <h3 class="text-lg md:text-xl font-bold">Checklist Gerador</h3>
+            <p class="text-xs md:text-sm">Manutenção preventiva de equipamentos</p>
           </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-1 text-white"
-              >Endereço <span class="text-red-400">*</span></label
-            >
-            <input
-              type="text"
-              id="userAddress"
-              class="w-full p-2 rounded-lg"
-              required
-            />
+        </div>
+        
+        <!-- Banner 3 -->
+        <div class="w-full flex-shrink-0 relative banner-animation">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-900/80 to-green-700/80"></div>
+          <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+               class="w-full h-full object-cover" alt="UTI">
+          <div class="absolute bottom-0 left-0 p-4 md:p-5 text-white">
+            <h3 class="text-lg md:text-xl font-bold">Checklist Enfermaria</h3>
+            <p class="text-xs md:text-sm">Procedimentos e cuidados diários</p>
           </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-1 text-white"
-              >Telefone <span class="text-red-400">*</span></label
-            >
-            <input
-              type="tel"
-              id="userPhone"
-              class="w-full p-2 rounded-lg"
-              required
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-1 text-white"
-              >Foto de Perfil</label
-            >
-            <div class="flex items-center space-x-4">
-              <input
-                type="file"
-                id="userPhoto"
-                class="hidden"
-                accept="image/*"
-              />
-              <button
-                type="button"
-                id="btnSelectPhoto"
-                class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                Selecionar Foto
-              </button>
-              <button
-                type="button"
-                id="btnRemovePhoto"
-                class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition hidden"
-              >
-                Remover Foto
-              </button>
-            </div>
-          </div>
-          <div class="flex justify-end space-x-2">
-            <button
-              type="button"
-              id="closeModal"
-              class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-            >
-              Salvar
-            </button>
-          </div>
-        </form>
+        </div>
+      </div>
+      
+      <!-- Indicadores do banner -->
+      <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+        <button class="banner-indicator w-2 h-2 rounded-full bg-white/50 hover:bg-white transition" data-index="0"></button>
+        <button class="banner-indicator w-2 h-2 rounded-full bg-white/50 hover:bg-white transition" data-index="1"></button>
+        <button class="banner-indicator w-2 h-2 rounded-full bg-white/50 hover:bg-white transition" data-index="2"></button>
       </div>
     </div>
 
-    <!-- O restante do JavaScript permanece EXATAMENTE IGUAL -->
-    <script>
-     // Variáveis globais
-      let currentStep = 1;
-      const totalSteps = 5;
-      const formData =
-        JSON.parse(localStorage.getItem("checklistFormData")) || {};
-      const userProfile = JSON.parse(localStorage.getItem("userProfile")) || {};
+    <!-- Setores do Hospital - Carrossel Horizontal -->
+    <section class="mt-8">
+      <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-4 flex items-center">
+        <i class="fas fa-procedures mr-2 text-green-600"></i> Setores do Hospital
+      </h2>
+      
+      <div class="flex overflow-x-auto gap-4 pb-5 carousel-container">
+        <!-- Gerador -->
+        <a href="./login-gerador.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon generator">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Gerador</span>
+        </a>
+        
+        <!-- Limpeza -->
+        <a href="checklist-limpeza.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon cleaning">
+            <i class="fas fa-broom"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Limpeza</span>
+        </a>
+        
+        <!-- Esterilização -->
+        <a href="checklist-esterilizacao.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon sterilization">
+            <i class="fas fa-hand-sparkles"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Esterilização</span>
+        </a>
+        
+        <!-- Enfermaria -->
+        <a href="checklist-enfermaria.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon ward">
+            <i class="fas fa-procedures"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Enfermaria</span>
+        </a>
+        
+        <!-- Centro Cirúrgico -->
+        <a href="checklist-cirurgico.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon surgery">
+            <i class="fas fa-scalpel"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Cirúrgico</span>
+        </a>
+        
+        <!-- Farmácia -->
+        <a href="checklist-farmacia.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon pharmacy">
+            <i class="fas fa-pills"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Farmácia</span>
+        </a>
+        
+        <!-- Laboratório -->
+        <a href="checklist-laboratorio.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon laboratory">
+            <i class="fas fa-flask"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Laboratório</span>
+        </a>
+        
+        <!-- Radiologia -->
+        <a href="checklist-radiologia.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon radiology">
+            <i class="fas fa-x-ray"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Radiologia</span>
+        </a>
+        
+        <!-- Emergência -->
+        <a href="checklist-emergencia.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon emergency">
+            <i class="fas fa-ambulance"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Emergência</span>
+        </a>
+        
+        <!-- Nutrição -->
+        <a href="checklist-nutricao.html" class="sector-card flex flex-col items-center glass-card p-4 rounded-2xl shadow-md flex-shrink-0">
+          <div class="sector-icon nutrition">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <span class="font-medium text-gray-800 text-center text-sm md:text-base">Nutrição</span>
+        </a>
+      </div>
+    </section>
+  </main>
 
-      // Função para formatar texto (capitalizar e substituir underscores)
-      function formatText(text) {
-        if (!text) return "";
+  <!-- Rodapé Fixo com links corrigidos -->
+  <footer class="fixed bottom-0 left-0 w-full bg-white border-t border-green-100 shadow-lg flex justify-around items-center py-3 z-50 green-shadow">
+    <a href="index.html" class="footer-item active flex flex-col items-center text-green-600">
+      <i class="fas fa-home text-lg md:text-xl"></i>
+      <span class="text-xs md:text-sm mt-1">Início</span>
+    </a>
+    
+    <a href="checklists.html" class="footer-item flex flex-col items-center text-gray-600 hover:text-green-600">
+      <i class="fas fa-list-alt text-lg md:text-xl"></i>
+      <span class="text-xs md:text-sm mt-1">Checklists</span>
+    </a>
+    
+    <a href="historico.html" class="footer-item flex flex-col items-center text-gray-600 hover:text-green-600">
+      <i class="fas fa-history text-lg md:text-xl"></i>
+      <span class="text-xs md:text-sm mt-1">Histórico</span>
+    </a>
+    
+    <a href="perfil.html" class="footer-item flex flex-col items-center text-gray-600 hover:text-green-600">
+      <i class="fas fa-user-circle text-lg md:text-xl"></i>
+      <span class="text-xs md:text-sm mt-1">Perfil</span>
+    </a>
+  </footer>
 
-        // Substituir underscores por espaços
-        let formatted = text.replace(/_/g, " ");
-
-        // Capitalizar primeira letra de cada palavra
-        formatted = formatted
-          .toLowerCase()
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
-
-        return formatted;
-      }
-
-      // Função para carregar o passo atual
-      function loadStep(step) {
-        const mainContent = document.getElementById("mainContent");
-
-        document.getElementById("progressBar").style.width = `${
-          (step / totalSteps) * 100
-        }%`;
-        document.getElementById(
-          "progressText"
-        ).textContent = `Passo ${step} de ${totalSteps}`;
-        document.getElementById("btnVoltar").disabled = step === 1;
-
-        fetch(`step${step}.html`)
-          .then((response) => response.text())
-          .then((html) => {
-            mainContent.innerHTML = html;
-
-            if (formData[`step${step}`]) {
-              const stepData = formData[`step${step}`];
-              for (const key in stepData) {
-                const element = document.getElementById(key);
-                if (element) {
-                  if (element.type === "radio" || element.type === "checkbox") {
-                    const checkedElement = document.querySelector(
-                      `[name="${element.name}"][value="${stepData[key]}"]`
-                    );
-                    if (checkedElement) checkedElement.checked = true;
-                  } else {
-                    element.value = stepData[key];
-                  }
-                }
-              }
-            }
-          })
-          .catch((error) => {
-            console.error("Erro ao carregar o passo:", error);
-            mainContent.innerHTML = `
-            <div class="bg-white bg-opacity-10 text-white p-6 rounded-lg text-center max-w-2xl mx-auto">
-              <h3 class="text-lg font-semibold mb-2">Erro ao carregar o conteúdo</h3>
-              <p class="mb-4">Por favor, tente novamente mais tarde.</p>
-              <button onclick="location.reload()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                Recarregar Página
-              </button>
-            </div>
-          `;
-          });
-      }
-
-      // Função para validar TODOS os campos obrigatórios
-      function validateCurrentStep() {
-        const requiredFields = document.querySelectorAll(
-          "#mainContent [required]"
-        );
-        let isValid = true;
-        let firstInvalidField = null;
-
-        requiredFields.forEach((field) => {
-          field.classList.remove("invalid-field");
-          if (field.type === "radio") {
-            const radioContainer = field.closest("div");
-            if (radioContainer)
-              radioContainer.classList.remove("invalid-radio-group");
-          }
-
-          let fieldValid = true;
-
-          if (field.type === "radio") {
-            const radioGroup = document.querySelectorAll(
-              `[name="${field.name}"]`
-            );
-            fieldValid = Array.from(radioGroup).some((radio) => radio.checked);
-
-            if (!fieldValid) {
-              const radioContainer = field.closest("div");
-              if (radioContainer)
-                radioContainer.classList.add("invalid-radio-group");
-            }
-          } else if (field.type === "select-one" && field.value === "") {
-            fieldValid = false;
-            field.classList.add("invalid-field");
-          } else if (!field.value.trim()) {
-            fieldValid = false;
-            field.classList.add("invalid-field");
-          }
-
-          if (!fieldValid && !firstInvalidField) {
-            firstInvalidField = field;
-          }
-
-          isValid = isValid && fieldValid;
-        });
-
-        if (!isValid) {
-          Swal.fire({
-            icon: "error",
-            title: "Campos obrigatórios",
-            html: "Por favor, preencha <b>TODOS</b> os campos marcados como obrigatórios",
-            background: "#1f2937",
-            color: "white",
-            confirmButtonColor: "#3b82f6",
-          });
-
-          if (firstInvalidField) {
-            firstInvalidField.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-            if (firstInvalidField.type === "radio") {
-              document
-                .querySelector(`[name="${firstInvalidField.name}"]`)
-                .closest("div")
-                .scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-          }
-        }
-
-        return isValid;
-      }
-
-      // Função para salvar os dados do passo atual
-      function saveCurrentStep() {
-        if (!validateCurrentStep()) {
-          return false;
-        }
-
-        const stepData = {};
-        const inputs = document.querySelectorAll(
-          "#mainContent input, #mainContent select, #mainContent textarea"
-        );
-
-        inputs.forEach((input) => {
-          if (input.type === "radio" && input.checked) {
-            stepData[input.name] = input.value;
-          } else if (input.type !== "radio" && input.type !== "checkbox") {
-            stepData[input.id] = input.value;
-          } else if (input.type === "checkbox") {
-            stepData[input.id] = input.checked;
-          }
-        });
-
-        formData[`step${currentStep}`] = stepData;
-        localStorage.setItem("checklistFormData", JSON.stringify(formData));
-
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Dados salvos com sucesso!",
-          showConfirmButton: false,
-          timer: 1500,
-          background: "#1f2937",
-          color: "white",
-        });
-
-        return true;
-      }
-
-      // Função para avançar para o próximo passo
-      function goToNextStep() {
-        if (!saveCurrentStep()) {
-          return;
-        }
-
-        if (currentStep < totalSteps) {
-          currentStep++;
-          loadStep(currentStep);
+  <!-- JavaScript para o Banner Rotativo -->
+  <script>
+    // Banner automático
+    let currentBanner = 0;
+    const banners = document.getElementById('bannerSlider').children;
+    const indicators = document.querySelectorAll('.banner-indicator');
+    const totalBanners = banners.length;
+    
+    function showBanner(index) {
+      currentBanner = index;
+      document.getElementById('bannerSlider').style.transform = `translateX(-${currentBanner * 100}%)`;
+      
+      // Atualiza indicadores
+      indicators.forEach((indicator, i) => {
+        if (i === currentBanner) {
+          indicator.classList.add('bg-white');
+          indicator.classList.remove('bg-white/50');
         } else {
-          generatePDF();
+          indicator.classList.remove('bg-white');
+          indicator.classList.add('bg-white/50');
         }
-      }
-
-      // Função para atualizar a imagem de perfil
-      function updateProfileImage(imageSrc) {
-        const defaultIcon = document.getElementById("defaultProfileIcon");
-        const profileImage = document.getElementById("userProfileImage");
-        const removePhotoBtn = document.getElementById("btnRemovePhoto");
-
-        if (imageSrc) {
-          profileImage.src = imageSrc;
-          profileImage.classList.remove("hidden");
-          defaultIcon.classList.add("hidden");
-          removePhotoBtn.classList.remove("hidden");
-          userProfile.photo = imageSrc;
-        } else {
-          profileImage.src = "";
-          profileImage.classList.add("hidden");
-          defaultIcon.classList.remove("hidden");
-          removePhotoBtn.classList.add("hidden");
-          delete userProfile.photo;
-        }
-        localStorage.setItem("userProfile", JSON.stringify(userProfile));
-      }
-
-      // Função para salvar dados do perfil
-      function saveProfile() {
-        userProfile.name = document.getElementById("userName").value;
-        userProfile.email = document.getElementById("userEmail").value;
-        userProfile.address = document.getElementById("userAddress").value;
-        userProfile.phone = document.getElementById("userPhone").value;
-
-        localStorage.setItem("userProfile", JSON.stringify(userProfile));
-
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Perfil atualizado!",
-          showConfirmButton: false,
-          timer: 1500,
-          background: "#1f2937",
-          color: "white",
-        });
-
-        document.getElementById("userModal").classList.add("hidden");
-      }
-
-      // Função para carregar perfil
-      function loadProfile() {
-        if (userProfile.name)
-          document.getElementById("userName").value = userProfile.name;
-        if (userProfile.email)
-          document.getElementById("userEmail").value = userProfile.email;
-        if (userProfile.address)
-          document.getElementById("userAddress").value = userProfile.address;
-        if (userProfile.phone)
-          document.getElementById("userPhone").value = userProfile.phone;
-        if (userProfile.photo) updateProfileImage(userProfile.photo);
-      }
-
-      // Função auxiliar para converter imagem em Base64
-      function getBase64Image(url) {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.crossOrigin = "Anonymous";
-          img.onload = () => {
-            try {
-              const canvas = document.createElement("canvas");
-              canvas.width = img.width;
-              canvas.height = img.height;
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(img, 0, 0);
-              resolve(canvas.toDataURL("image/jpeg"));
-            } catch (error) {
-              reject(error);
-            }
-          };
-          img.onerror = () => reject(new Error("Erro ao carregar imagem"));
-          img.src = url;
-        });
-      }
-
-      async function generatePDF() {
-        if (!saveCurrentStep()) {
-          return;
-        }
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        // Configurações
-        const margin = 15;
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const columnWidth = (pageWidth - margin * 3) / 2;
-        let leftY = 50;
-        let rightY = 50;
-        const lineHeight = 6;
-
-        // Adicionar logo
-        try {
-          const logoData = await getBase64Image("./img/logo4.jpg");
-          doc.addImage(logoData, "JPEG", margin, 20, 20, 20);
-        } catch (error) {
-          console.error("Erro ao carregar a logo:", error);
-        }
-
-        // Título centralizado
-        doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
-        const title = "CHECK LIST DO GERADOR";
-        const titleWidth =
-          (doc.getStringUnitWidth(title) * doc.internal.getFontSize()) /
-          doc.internal.scaleFactor;
-        const titleX = (pageWidth - titleWidth) / 2;
-        doc.text(title, titleX, 30);
-
-        // Função auxiliar para adicionar seções
-        function addSection(step, x, y) {
-          const stepData = formData[`step${step}`];
-          if (!stepData) return y;
-
-          // Título da seção
-          doc.setFontSize(12);
-          doc.setFont("helvetica", "bold");
-          doc.text(`SEÇÃO ${step}`, x, y);
-          y += 7;
-
-          // Linha divisória entre título da seção e conteúdo
-          doc.setDrawColor(200, 200, 200);
-          doc.line(x, y, x + columnWidth, y);
-          y += 10;
-
-          // Conteúdo
-          doc.setFontSize(10);
-          doc.setFont("helvetica", "normal");
-
-          for (const [key, value] of Object.entries(stepData)) {
-            const formattedKey = formatText(key);
-            const displayValue =
-              typeof value === "boolean" ? (value ? "✔" : "✖") : value;
-
-            doc.text(`• ${formattedKey}: ${displayValue}`, x, y);
-            y += lineHeight;
-
-            if (y > 270) break;
-          }
-
-          return y + 5;
-        }
-
-        // Organização das seções
-        leftY = addSection(1, margin, leftY);
-        rightY = addSection(4, margin * 2 + columnWidth, rightY);
-
-        leftY = addSection(2, margin, leftY);
-        rightY = addSection(5, margin * 2 + columnWidth, rightY);
-
-        const section3Y = Math.max(leftY, rightY);
-        if (section3Y < 270) {
-          addSection(3, margin, section3Y);
-        } else {
-          doc.addPage();
-          addSection(3, margin, 20);
-        }
-
-        doc.save("checklist-hg.pdf");
-
-        Swal.fire({
-          title: "Relatório Gerado",
-          text: "Checklist salvo como PDF em uma página!",
-          icon: "success",
-          background: "#1f2937",
-          color: "white",
-          confirmButtonColor: "#3b82f6",
-        });
-      }
-
-      // Inicialização
-      document.addEventListener("DOMContentLoaded", () => {
-        loadStep(currentStep);
-        loadProfile();
-
-        document.getElementById("btnVoltar").addEventListener("click", () => {
-          if (currentStep > 1) {
-            currentStep--;
-            loadStep(currentStep);
-          }
-        });
-
-        document
-          .getElementById("btnAvancar")
-          .addEventListener("click", goToNextStep);
-
-        document.getElementById("closeApp").addEventListener("click", () => {
-          window.location.href = "index.html";
-        });
-
-        const userModal = document.getElementById("userModal");
-        document
-          .getElementById("profileImageBtn")
-          .addEventListener("click", () => {
-            userModal.classList.remove("hidden");
-          });
-
-        document.getElementById("closeModal").addEventListener("click", () => {
-          userModal.classList.add("hidden");
-        });
-
-        document.getElementById("userForm").addEventListener("submit", (e) => {
-          e.preventDefault();
-          saveProfile();
-        });
-
-        const fileInput = document.getElementById("userPhoto");
-        document
-          .getElementById("btnSelectPhoto")
-          .addEventListener("click", () => {
-            fileInput.click();
-          });
-
-        fileInput.addEventListener("change", (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              updateProfileImage(event.target.result);
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-
-        document
-          .getElementById("btnRemovePhoto")
-          .addEventListener("click", () => {
-            fileInput.value = "";
-            updateProfileImage(null);
-          });
       });
-    </script>
-  </body>
+      
+      // Reinicia animação
+      banners[currentBanner].classList.remove('banner-animation');
+      void banners[currentBanner].offsetWidth; // Trigger reflow
+      banners[currentBanner].classList.add('banner-animation');
+    }
+    
+    // Rotação automática a cada 5 segundos
+    setInterval(() => {
+      currentBanner = (currentBanner + 1) % totalBanners;
+      showBanner(currentBanner);
+    }, 5000);
+    
+    // Clique nos indicadores
+    indicators.forEach(indicator => {
+      indicator.addEventListener('click', () => {
+        showBanner(parseInt(indicator.dataset.index));
+      });
+    });
+    
+    // Inicia com o primeiro banner visível
+    showBanner(0);
+    
+    // Adiciona classe active ao item do footer clicado
+    document.querySelectorAll('.footer-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        // Remove a prevenção padrão para permitir a navegação
+        // document.querySelector('.footer-item.active').classList.remove('active', 'text-green-600');
+        // this.classList.add('active', 'text-green-600');
+      });
+    });
+  </script>
+</body>
 </html>
