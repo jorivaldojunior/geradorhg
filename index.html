@@ -3,161 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checklist HG - Hospital Guararapes</title>
+  <title>Checklist-Hospital Guararapes</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="style.css">
   <style>
     body {
       background: white;
-      overflow: hidden;
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      overflow-x: hidden;
     }
-    
-    .logo-container {
-      animation: float 6s ease-in-out infinite;
-      transition: all 0.3s ease;
+
+    .logo-animada {
+      animation: bounceHorizontal 3s infinite ease-in-out;
+      transform-origin: center bottom;
+      width: 300px;
+      cursor: pointer;
     }
-    
-    .logo-container:hover {
-      transform: scale(1.05);
+
+    @media (min-width: 768px) {
+      .logo-animada {
+        width: 400px;
+      }
     }
-    
-    @keyframes float {
+
+    @keyframes bounceHorizontal {
       0%, 100% {
-        transform: translateY(0);
+        transform: translateX(0) scale(1);
+      }
+      25% {
+        transform: translateX(-30px) scale(1.05, 0.95);
       }
       50% {
-        transform: translateY(-20px);
+        transform: translateX(0) scale(1);
       }
-    }
-    
-    .pulse {
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% {
-        opacity: 1;
+      75% {
+        transform: translateX(30px) scale(1.05, 0.95);
       }
-      50% {
-        opacity: 0.6;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-    
-    .loading-bar {
-      width: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #059669, #10b981);
-      transition: width 0.1s linear;
-      border-radius: 2px;
-    }
-    
-    .countdown {
-      font-size: 0.9rem;
-      color: #047857;
-      font-weight: 500;
     }
   </style>
 </head>
 <body class="flex flex-col items-center justify-center h-screen text-center px-4">
-  <!-- Container principal com animação -->
-  <div class="logo-container flex flex-col items-center">
-    <!-- Logo HG com tamanho responsivo -->
-    <img 
-      src="./img/logohg.png" 
-      alt="Hospital Guararapes" 
-      id="hospitalLogo"
-      class="w-64 md:w-80 lg:w-96 cursor-pointer mb-6 opacity-0 transition-opacity duration-500"
-      onclick="avancarPagina()"
-    />
-    
-    <!-- Barra de carregamento animada -->
-    <div class="w-64 md:w-80 lg:w-96 h-1 bg-gray-200 rounded-full mb-2 overflow-hidden">
-      <div id="loadingBar" class="loading-bar"></div>
-    </div>
-    
-    <!-- Contador regressivo -->
-    <div id="countdown" class="countdown mb-4">10 segundos</div>
-    
-    <!-- Mensagem interativa -->
-    <div class="text-green-600 mb-8">
-      <p class="text-lg font-medium">Sistema de Checklist Hospital...
-      <p class="text-sm mt-2 pulse">Clique na logo para entrar imediatamente</p>
-    </div>
-  </div>
 
+  <!-- LOGO COM ANIMAÇÃO E EVENTO DE CLIQUE -->
+  <img 
+    src="./img/logohg.png" 
+    alt="Logo hospital Guararapes" 
+    class="logo-animada" 
+    onclick="avancarPagina()" 
+  />
+  <p class="text-sm text-black mt-4">Clique na logo...</p>
+  <!-- JS -->
   <script>
-    // Função para avançar para a próxima página
     function avancarPagina() {
-      // Mostra efeito visual de clique
-      document.querySelector('.logo-container').classList.add('animate-pulse');
-      
-      // Cancela a contagem regressiva se estiver ocorrendo
-      clearInterval(countdownInterval);
-      clearInterval(progressInterval);
-      
-      // Redireciona após breve delay
-      setTimeout(() => {
-        window.location.href = "index1.html";
-      }, 300);
+      window.location.href = "index1.html";
     }
-    
-    // Variáveis para controle dos intervalos
-    let countdownInterval;
-    let progressInterval;
-    
-    // Quando a logo terminar de carregar
-    document.getElementById('hospitalLogo').onload = function() {
-      // Mostra a logo com fade-in
-      this.classList.remove('opacity-0');
-      
-      // Inicia a contagem regressiva após 1s (só para efeito visual)
-      setTimeout(() => {
-        let seconds = 10;
-        let progress = 0;
-        const countdownElement = document.getElementById('countdown');
-        const loadingBar = document.getElementById('loadingBar');
-        
-        // Atualiza o contador visual
-        countdownElement.textContent = `${seconds} segundos`;
-        
-        // Intervalo para a contagem regressiva
-        countdownInterval = setInterval(() => {
-          seconds--;
-          countdownElement.textContent = `${seconds} segundo${seconds !== 1 ? 's' : ''}`;
-          
-          if (seconds <= 0) {
-            clearInterval(countdownInterval);
-            avancarPagina();
-          }
-        }, 1000);
-        
-        // Intervalo para a barra de progresso (10s)
-        progressInterval = setInterval(() => {
-          progress += 1;
-          loadingBar.style.width = `${progress}%`;
-          
-          if (progress >= 100) {
-            clearInterval(progressInterval);
-          }
-        }, 100);
-      }, 1000);
-    };
-    
-    // Caso a logo não carregue (fallback)
-    setTimeout(() => {
-      if (document.getElementById('hospitalLogo').complete) return;
-      
-      document.getElementById('hospitalLogo').classList.remove('opacity-0');
-      document.getElementById('countdown').textContent = "Carregando...";
-      avancarPagina();
-    }, 5000);
-    
-    // Permite clique/touch na logo
-    document.getElementById('hospitalLogo').addEventListener('click', avancarPagina);
   </script>
+
 </body>
 </html>
