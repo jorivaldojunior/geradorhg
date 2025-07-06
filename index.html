@@ -1,83 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hospital Guararapes</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-          transform: translateY(0);
-        }
-        40% {
-          transform: translateY(-10px);
-        }
-        60% {
-          transform: translateY(-5px);
-        }
-      }
-      .arrow-animate {
-        animation: bounce 2s infinite;
-      }
-      .arrow-btn {
-        transition: all 0.3s ease;
-      }
-      .arrow-btn:hover {
-        transform: scale(1.1);
-      }
-      .logo-img {
-        border-radius: 0;
-        box-shadow: none;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checklist-HG</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: white;
+      overflow-x: hidden;
+    }
 
-      /* === Efeito 3D para o H1 === */
-      .h1-3d {
-        color: #15803d; /* verde tailwind (green-700) */
-        font-weight: 900;
-        text-shadow: 2px 2px 0 #00000030, 4px 4px 0 #00000020;
-        transform: perspective(500px) rotateX(5deg) rotateY(-3deg);
+    .logo-animada {
+      animation: bounceHorizontal 3s infinite ease-in-out;
+      transform-origin: center bottom;
+      width: 300px;
+      cursor: pointer;
+    }
+
+    @media (min-width: 768px) {
+      .logo-animada {
+        width: 400px;
       }
-    </style>
-  </head>
+    }
 
-  <body class="bg-white h-screen flex flex-col items-center justify-center text-white">
-    <!-- Conteúdo central -->
-    <div class="flex flex-col items-center space-y-8">
-      <!-- Logotipo e Título - Aumentados -->
-      <div class="flex flex-col items-center space-y-6">
-        <img
-          src="./img/logo3d4.png"
-          alt="Logotipo"
-          class="w-48 h-48 logo-img"
-        />
-        <h1 class="text-3xl md:text-4xl h1-3d">Check List...</h1>
-      </div>
+    @keyframes bounceHorizontal {
+      0%, 100% {
+        transform: translateX(0) scale(1);
+      }
+      25% {
+        transform: translateX(-30px) scale(1.05, 0.95);
+      }
+      50% {
+        transform: translateX(0) scale(1);
+      }
+      75% {
+        transform: translateX(30px) scale(1.05, 0.95);
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center h-screen text-center px-4">
 
-      <!-- Botão de seta animada -->
-      <a
-        href="./index1.html"
-        class="arrow-btn bg-green-500 text-white p-4 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 mt-4"
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          class="h-10 w-10 arrow-animate" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
-        >
-          <path 
-            stroke-linecap="round" 
-            stroke-linejoin="round" 
-            stroke-width="2" 
-            d="M14 5l7 7m0 0l-7 7m7-7H3" 
-          />
-        </svg>
-      </a>
-    </div>
+  <!-- LOGO COM ANIMAÇÃO E EVENTO DE CLIQUE -->
+  <img 
+    src="./img/logohg.png" 
+    alt="Logo Hospital Guararapes" 
+    class="logo-animada" 
+    onclick="avancarPagina()" 
+  />
+  <p class="text-sm text-green-500 mt-4">Clique na logo...</p>
+  <!-- JS -->
+  <script>
+    function avancarPagina() {
+      window.location.href = "index1.html";
+    }
+  </script>
 
-    
-
-    <script src="script.js"></script>
-  </body>
+</body>
 </html>
